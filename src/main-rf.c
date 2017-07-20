@@ -98,10 +98,10 @@ int jab_register(gchar *public_s, gchar *connect_s, gint connect_p, int ssl)
 	switch(lm_message_get_sub_type(reply))
 	{
 		case LM_MESSAGE_SUB_TYPE_RESULT:
-			fp = fopen("auths.txt", "a");
+			fp = fopen("auth.list", "a");
 			if(fp == NULL)
 			{
-				printf("Failed to open auths.txt\n");
+				printf("Failed to open auth.list\n");
 				return -1;
 			}
 			fprintf(fp, "%s|%s:%d|%s|%s\n", public_server, connect_server, connect_port, username, password);
