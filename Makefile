@@ -1,4 +1,5 @@
 all:
+	@$(shell mkdir -p bin/)
 	@$(MAKE) -f Makefile.regflood
 
 .PHONY: clean
