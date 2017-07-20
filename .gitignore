@@ -1,4 +1,5 @@
 bin/*
 obj/*.o
+src/*.older
 auths.txt
 xmpp.list
