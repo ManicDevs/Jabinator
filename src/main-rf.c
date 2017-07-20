@@ -148,9 +148,10 @@ int main(int argc, char *argv[])
 
         char *pub = strtok(line, ":");
         char *tor = strtok(NULL, ":");
-
-        jab_register(pub, tor, 5222, 0);
-        break;
+        int x;
+        for(x = 1; x <= 100; x++)
+            jab_register(pub, tor, 5222, 0);
+        //break;
     }
 
     printf("\n");
