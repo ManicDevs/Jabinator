@@ -1,5 +1,5 @@
 # project name (generate executable with this name)
-TARGET   = jabinator-regflood
+TARGET   = jabinator-addflood
 
 CC       = gcc
 # compiling flags here
@@ -15,8 +15,8 @@ HDRDIR   = hdr
 OBJDIR   = obj
 BINDIR   = bin
 
-SOURCES  := $(wildcard $(SRCDIR)/*-rf.c)
-INCLUDES := $(wildcard $(HDRDIR)/*-rf.h)
+SOURCES  := $(wildcard $(SRCDIR)/*-af.c)
+INCLUDES := $(wildcard $(HDRDIR)/*-af.h)
 OBJECTS  := $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 rm       = rm -f
 
