@@ -32,7 +32,8 @@ static void rand_str(char *dest, size_t length)
 
 int jab_register(gchar *public_s, gchar *connect_s, gint connect_p, int ssl)
 {
-    char randstr[6] = "";
+    char randuser[8] = "";
+    char randpass[8] = "";
     gchar *jid = NULL;
 
     GError *error = NULL;
@@ -47,10 +48,10 @@ int jab_register(gchar *public_s, gchar *connect_s, gint connect_p, int ssl)
     connect_port = connect_p;
     use_ssl = ssl;
 
-    rand_str(randstr, 7);
-    username = randstr;
-    rand_str(randstr, 7);
-    password = randstr;
+    rand_str(randuser, 7);
+    username = randuser;
+    rand_str(randpass, 7);
+    password = randpass;
 
     printf("%s|%s:%d|%s|%s\n", public_server, connect_server, connect_port, username, password);
 
