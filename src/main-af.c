@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-int main(int argc, char *argv[])
+int main(void)
 {
-	printf("Add flooder\n");
+    printf("LOL\n");
 
-	return 0;
+    return 0;
 }

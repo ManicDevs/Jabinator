@@ -1,0 +1,40 @@
+# project name (generate executable with this name)
+TARGET   = jabinator-msgflood
+
+CC       = gcc
+# compiling flags here
+CFLAGS   = -g -std=c99 -Wall -I. -I./includes `pkg-config --cflags loudmouth-1.0 --libs`
+
+LINKER   = gcc
+# linking flags here
+LFLAGS   = -Wall -I. -I./includes `pkg-config --cflags loudmouth-1.0 --libs`
+
+# change these to proper directories where each file should be
+SRCDIR   = src
+HDRDIR   = hdr
+OBJDIR   = obj
+BINDIR   = bin
+
+SOURCES  := $(wildcard $(SRCDIR)/*-mf.c)
+INCLUDES := $(wildcard $(HDRDIR)/*-mf.h)
+OBJECTS  := $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+rm       = rm -f
+
+
+$(BINDIR)/$(TARGET): $(OBJECTS)
+	@$(LINKER) $(OBJECTS) $(LFLAGS) -o $@
+	@echo "Linking complete!"
+
+$(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
+	@$(CC) $(CFLAGS) -c $< -o $@
+	@echo "Compiled "$<" successfully!"
+
+.PHONY: clean
+clean:
+	@$(rm) $(OBJECTS)
+	@echo "Cleanup complete!"
+
+.PHONY: remove
+remove: clean
+	@$(rm) $(BINDIR)/$(TARGET)
+	@echo "Executable removed!"
