@@ -5,6 +5,14 @@
 
 #include <loudmouth/loudmouth.h>
 
+#ifndef __LOUDMOUTH_H__
+#   error "You're in need of the loudmouth library."
+#   error "Arch:    pacman -S loudmouth"
+#   error "Github:  https://github.com/mcabber/loudmouth"
+#endif
+
+#include <hdr/global.h>
+
 static gint connect_port = 5222;
 static gchar *public_server = NULL;
 static gchar *connect_server = NULL;
@@ -53,7 +61,7 @@ int jab_register(gchar *public_s, gchar *connect_s, gint connect_p, int ssl)
     rand_str(randpass, 7);
     password = randpass;
 
-    printf("%s|%s:%d|%s|%s\n", public_server, connect_server, connect_port, username, password);
+    g_print("%s|%s:%d|%s|%s\n", public_server, connect_server, connect_port, username, password);
 
     connection = lm_connection_new(connect_server);
     jid = g_strdup_printf("%s@%s", username, public_server);
@@ -102,7 +110,7 @@ int jab_register(gchar *public_s, gchar *connect_s, gint connect_p, int ssl)
             fp = fopen("auth.list", "a");
             if(fp == NULL)
             {
-                printf("Failed to open auth.list\n");
+                g_print("Failed to open auth.list\n");
                 return -1;
             }
             fprintf(fp, "%s|%s:%d|%s|%s\n", public_server, connect_server, connect_port, username, password);
@@ -139,7 +147,7 @@ int main(int argc, char *argv[])
     fp = fopen("xmpp.list", "r");
     if(fp == NULL)
     {
-        printf("xmpp.list doesn't exist!\n");
+        g_print("xmpp.list doesn't exist!\n");
         return -1;
     }
 
@@ -155,7 +163,7 @@ int main(int argc, char *argv[])
         //break;
     }
 
-    printf("\n");
+    g_print("\n");
 
     fclose(fp);
     if(line)

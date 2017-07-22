@@ -1,7 +1,16 @@
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <string.h>
 
 #include <loudmouth/loudmouth.h>
+
+#ifndef __LOUDMOUTH_H__
+#   error "You're in need of the loudmouth library."
+#   error "Arch:    pacman -S loudmouth"
+#   error "Github:  https://github.com/mcabber/loudmouth"
+#endif
+
+#include <hdr/global.h>
 
 static GMainLoop *main_loop;
 static gboolean   test_success = FALSE;
