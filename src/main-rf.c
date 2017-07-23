@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 
     GOptionContext *context;
 
-    context = g_option_context_new("- Jabinator - Add flooder");
+    context = g_option_context_new("- Jabinator - Registration flooder");
     g_option_context_add_main_entries(context, entries, NULL);
     g_option_context_parse(context, &argc, &argv, NULL);
     g_option_context_free(context);
