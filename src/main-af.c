@@ -15,16 +15,19 @@
 
 GMainContext *main_context;
 
+static gchar *authsfile = NULL;
 static gchar *recipient = NULL;
-static gchar *message = "Don't accept this bitch!";
+//static gchar *message = "Don't accept this bitch!";
 static gchar *resource = "NULL";
 
 static GOptionEntry entries[] =
 {
+    { "auths", 'a', 0, G_OPTION_ARG_STRING, &authsfile,
+      "Authentications file list (e.g. auth.list)", NULL },
     { "recipient", 'R', 0, G_OPTION_ARG_STRING, &recipient,
       "Recipient to send the message to (e.g. user@server.org)", NULL },
-    { "message", 'm', 0, G_OPTION_ARG_STRING, &message,
-      "Message to send to recipient [default=Don't accept this bitch!]", NULL },
+//    { "message", 'm', 0, G_OPTION_ARG_STRING, &message,
+//      "Message to send to recipient [default=Don't accept this bitch!]", NULL },
     { "resource", 'r', 0, G_OPTION_ARG_STRING, &resource,
       "Resource to connect with [default=NULL]", NULL },
     { NULL }
@@ -44,7 +47,7 @@ int main(int argc, char **argv)
     g_option_context_parse(context, &argc, &argv, NULL);
     g_option_context_free(context);
 
-    if(!recipient || !message || !resource)
+    if(!authsfile || !recipient /*|| !message*/ || !resource)
     {
         g_printerr("For usage, try %s --help\n", argv[0]);
         return EXIT_FAILURE;
@@ -56,7 +59,7 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    fp = fopen("auth.list", "r");
+    fp = fopen(authsfile, "r");
     if(fp == NULL)
     {
         g_print("auth.list doesn't exist!\n");
@@ -86,13 +89,9 @@ int main(int argc, char **argv)
         lconnection = xmpp_connect(pubserv, conserv, jconport,
             username, password, resource, FALSE);
 
-        gchar *jid = "jid@domain.tld";
-
-        xmpp_addjid(jid, lconnection);
-        xmpp_deljid(jid, lconnection);
+        xmpp_addjid(recipient, lconnection);
+        xmpp_deljid(recipient, lconnection);
         //xmpp_sendmsg(jid, "LOL", "Hello", lconnection);
-
-        break;
     }
 
     return 0;
