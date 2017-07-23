@@ -1,4 +1,5 @@
 #define _GNU_SOURCE
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -11,9 +12,6 @@
 #endif
 
 #include <hdr/global.h>
-#include <hdr/xmpp_iqs.h>
-
-GMainContext *main_context;
 
 static GMainLoop *main_loop;
 static gboolean   test_success = FALSE;
@@ -31,20 +29,10 @@ static gchar     *message = "test asynchronous message";
 
 static GOptionEntry entries[] =
 {
-    { "server", 's', 0, G_OPTION_ARG_STRING, &server,
-      "Server to connect to", NULL },
-    { "port", 'P', 0, G_OPTION_ARG_INT, &port,
-      "Port to connect to [default=5222]", NULL },
-    { "username", 'u', 0, G_OPTION_ARG_STRING, &username,
-      "Username to connect with (user@server.org)", NULL },
-    { "password", 'p', 0, G_OPTION_ARG_STRING, &password,
-      "Password to try", NULL },
     { "resource", 'r', 0, G_OPTION_ARG_STRING, &resource,
       "Resource connect with [default=lm-send-async]", NULL },
     { "recipient", 'R', 0, G_OPTION_ARG_STRING, &recipient,
       "Recipient to send the message to (e.g. user@server.org)", NULL },
-    { "fingerprint", 'f', 0, G_OPTION_ARG_STRING, &fingerprint,
-      "SSL Fingerprint to use", NULL },
     { "message", 'm', 0, G_OPTION_ARG_STRING, &message,
       "Message to send to recipient [default=test message]", NULL },
     { NULL }
@@ -120,17 +108,42 @@ ssl_cb (LmSSL       *ssl,
     return LM_SSL_RESPONSE_CONTINUE;
 }
 
+LmHandlerResult handle_iq_dummy(LmMessageHandler *h, LmConnection *c,
+                                 LmMessage *m, gpointer ud)
+{
+  return LM_HANDLER_RESULT_REMOVE_MESSAGE;
+}
+
 static void
 connection_auth_cb (LmConnection *connection,
                     gboolean      success,
                     gpointer      user_data)
 {
     if (success) {
-        GError    *error = NULL;
         LmMessage *m;
+        LmMessageNode *query, *y;
+        LmMessageHandler *handler;
 
         g_print ("LmSendAsync: Authenticated successfully\n");
 
+        m = lm_message_new_with_sub_type(NULL, LM_MESSAGE_TYPE_IQ, LM_MESSAGE_SUB_TYPE_SET);
+        query = lm_message_node_add_child(m->node, "query", NULL);
+        lm_message_node_set_attribute(query, "xmlns", "jabber:iq:roster");
+        y = lm_message_node_add_child(query, "item", NULL);
+        lm_message_node_set_attribute(y, "jid", recipient);
+        lm_message_node_set_attribute(y, "name", recipient);
+        handler = lm_message_handler_new(handle_iq_dummy, NULL, FALSE);
+        lm_connection_send_with_reply(connection, m, handler, NULL);
+        lm_message_handler_unref(handler);
+        lm_message_unref(m);
+
+        LmMessage *x = lm_message_new_with_sub_type(recipient,
+                                              LM_MESSAGE_TYPE_PRESENCE,
+                                              LM_MESSAGE_SUB_TYPE_SUBSCRIBE);
+        lm_connection_send(connection, x, NULL);
+        lm_message_unref(x);
+
+/*
         m = lm_message_new (recipient, LM_MESSAGE_TYPE_MESSAGE);
         lm_message_node_add_child (m->node, "body", message);
 
@@ -144,6 +157,7 @@ connection_auth_cb (LmConnection *connection,
         }
 
         lm_message_unref (m);
+*/
     } else {
         g_printerr ("LmSendAsync: Failed to authenticate\n");
     }

@@ -16,7 +16,8 @@ OBJDIR   = obj
 BINDIR   = bin
 
 SOURCES  := $(wildcard $(SRCDIR)/*-mf.c)
-INCLUDES := $(wildcard $(HDRDIR)/*-mf.h)
+SOURCES  += $(SRCDIR)/functions.c
+INCLUDES := $(wildcard $(HDRDIR)/*.h)
 OBJECTS  := $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 rm       = rm -f
 

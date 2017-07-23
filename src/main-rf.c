@@ -12,6 +12,9 @@
 #endif
 
 #include <hdr/global.h>
+#include <hdr/xmpp_iqs.h>
+
+GMainContext *main_context;
 
 static gint connect_port = 5222;
 static gchar *public_server = NULL;
