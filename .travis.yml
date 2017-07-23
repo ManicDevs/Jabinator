@@ -1,0 +1,16 @@
+sudo: required
+
+language: c
+
+compiler:
+  - gcc
+
+arch:
+  packages:
+    - cmake
+    - loudmouth
+  script:
+    - "make"
+
+script:
+    - "curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash"
