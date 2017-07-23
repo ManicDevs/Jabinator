@@ -15,18 +15,18 @@
 
 GMainContext *main_context;
 
-static gchar *resource = NULL;
 static gchar *recipient = NULL;
-static gchar *message = "test asynchronous message";
+static gchar *message = "Don't accept this bitch!";
+static gchar *resource = "NULL";
 
 static GOptionEntry entries[] =
 {
-    { "resource", 'r', 0, G_OPTION_ARG_STRING, &resource,
-      "Resource connect with [default=lm-send-async]", NULL },
     { "recipient", 'R', 0, G_OPTION_ARG_STRING, &recipient,
       "Recipient to send the message to (e.g. user@server.org)", NULL },
     { "message", 'm', 0, G_OPTION_ARG_STRING, &message,
-      "Message to send to recipient [default=test message]", NULL },
+      "Message to send to recipient [default=Don't accept this bitch!]", NULL },
+    { "resource", 'r', 0, G_OPTION_ARG_STRING, &resource,
+      "Resource to connect with [default=NULL]", NULL },
     { NULL }
 };
 
@@ -39,14 +39,20 @@ int main(int argc, char **argv)
 
     GOptionContext *context;
 
-    context = g_option_context_new ("- test send message asynchronously");
-    g_option_context_add_main_entries (context, entries, NULL);
-    g_option_context_parse (context, &argc, &argv, NULL);
-    g_option_context_free (context);
+    context = g_option_context_new("- Jabinator - Add flooder");
+    g_option_context_add_main_entries(context, entries, NULL);
+    g_option_context_parse(context, &argc, &argv, NULL);
+    g_option_context_free(context);
+
+    if(!recipient || !message || !resource)
+    {
+        g_printerr("For usage, try %s --help\n", argv[0]);
+        return EXIT_FAILURE;
+    }
 
     if(recipient && strchr(recipient, '@') == NULL)
     {
-        g_printerr ("LmSendAsync: Username must have an '@' included\n");
+        g_printerr("Username must have an '@' included\n");
         return EXIT_FAILURE;
     }
 
