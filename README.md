@@ -13,10 +13,9 @@ In the working directory, i.e. bin/ - When it's created after running "make" you
 * Format: pubserv|connectserv:port|user|pass
 
 # Usage
-
-* --- jabinator-regflood
+## jabinator-regflood
 $ ./jabinator-regflood --help
-
+```
 Usage:
   jabinator-regflood [OPTION?] - Jabinator - Registration flooder
 
@@ -28,10 +27,10 @@ Application Options:
   -o, --outfile      Authentications file list to output (e.g. auth.list)
   -t, --threads      Number of threads to use [default=1]
   -c, --cycles       Number of cycles to register accounts [default=1]
+```
 
 
-
-* --- jabinator-addflood
+## jabinator-addflood
 ```
 $ ./jabinator-addflood --help
 
@@ -49,9 +48,9 @@ Application Options:
 ```
 
 
-* --- jabinator-msgflood
+## jabinator-msgflood
 $ ./jabinator-msgflood --help
-
+```
 Usage:
   jabinator-msgflood [OPTION?] - Jabinator - Message flooder
 
@@ -65,3 +64,6 @@ Application Options:
   -s, --subject       Subject line to send [default=You need this JAB!]
   -m, --message       Message to send to recipient [default=Don't be a fool, take your meds!]
   -r, --resource      Resource to connect with [default=NULL]
+```
+
+
