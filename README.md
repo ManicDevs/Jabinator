@@ -32,6 +32,7 @@ Application Options:
 
 
 * --- jabinator-addflood
+```
 $ ./jabinator-addflood --help
 
 Usage:
@@ -45,7 +46,7 @@ Application Options:
   -t, --threads       Number of threads to use [default=1]
   -R, --recipient     Recipient to send the message to (e.g. user@server.org)
   -r, --resource      Resource to connect with [default=NULL]
-
+```
 
 
 * --- jabinator-msgflood
