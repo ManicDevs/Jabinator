@@ -1,4 +1,4 @@
-# Jabinator
+# Jabinator [![Build Status](https://travis-ci.org/ManicSec/Jabinator.svg?branch=master)](https://travis-ci.org/ManicSec/Jabinator)
 Where XMPP gets it's JAB
 
 # Information
