@@ -116,7 +116,7 @@ int main(int argc, char **argv)
         {
             pthread_create(&thread[i], NULL, (void*)&thread_messager, (void*)line);
             pthread_detach(thread[i]);
-            g_usleep(500000);
+            g_usleep(100000);
         }
     }
 
