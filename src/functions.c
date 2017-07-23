@@ -62,6 +62,20 @@ static void connection_close_cb(LmConnection *lconnection, LmDisconnectReason re
         g_print("Disconnected, reason: %d->%s", reason, str);
 }
 
+static void rand_str(char *dest, size_t length)
+{
+    const char charset[] =  "0123456789"
+                            "abcdefghijklmnopqrstuvwxyz";
+
+    while(length-- != 0)
+    {
+        size_t index = (double)rand() / RAND_MAX * (sizeof charset - 1);
+        *dest++ = charset[index];
+    }
+
+    *dest = '\0';
+}
+
 gboolean xmpp_is_online(LmConnection *lconnection)
 {
     if(lconnection && lm_connection_is_authenticated(lconnection))
@@ -262,4 +276,78 @@ void xmpp_sendmsg(gchar *jid, gchar *subj, gchar *body, LmConnection *lconnectio
         g_print("Sent message:'%s'\n", lm_message_node_to_string(m->node));
 
     lm_message_unref(m);
+}
+
+void xmpp_register(gchar *pubserv, gchar *conserv, gchar *conport,
+    gchar *jid, gchar *jpass, gchar *authsfile, LmConnection *lconnection)
+{
+    FILE            *fp;
+    LmMessage       *miq, *reply;
+    LmMessageNode   *query, *node;
+    GError          *error;
+
+    g_print("%s|%s:%s|%s|%s\n", pubserv, conserv, conport, jid, jpass);
+
+    jid = g_strdup_printf("%s@%s", jid, pubserv);
+    lm_connection_set_jid(lconnection, jid);
+
+    miq = lm_message_new_with_sub_type(NULL, LM_MESSAGE_TYPE_IQ, LM_MESSAGE_SUB_TYPE_SET);
+    query = lm_message_node_add_child(miq->node, "query", NULL);
+    lm_message_node_set_attributes(query, "xmlns", IQ_REGISTER, NULL);
+    lm_message_node_add_child(query, "username", jid);
+    lm_message_node_add_child(query, "password", jpass);
+
+    reply = lm_connection_send_with_reply_and_block(lconnection, miq, &error);
+    if(!reply)
+    {
+        g_free(jid);
+        g_print("Failed to send registration: %s\n", error->message);
+        return;
+    }
+
+    switch(lm_message_get_sub_type(reply))
+    {
+        case LM_MESSAGE_SUB_TYPE_RESULT:
+            fp = fopen(authsfile, "a");
+            if(fp == NULL)
+            {
+                g_print("Failed to open %s\n", authsfile);
+                return;
+            }
+            fprintf(fp, "%s|%s:%s|%s|%s\n", pubserv, conserv, conport, jid, jpass);
+            fclose(fp);
+            g_print("Succeeded in registering account '%s@%s'\n", jid, pubserv);
+        break;
+
+        case LM_MESSAGE_SUB_TYPE_ERROR:
+            g_print("Failed to register account '%s@%s' due to: ", jid, pubserv);
+            node = lm_message_node_find_child(reply->node, "error");
+            if(node)
+                g_print("%s\n", lm_message_node_get_value(node));
+            else
+                g_print("Unknown error\n");
+        break;
+
+        default:
+            g_print("Unknown error\n");
+        break;
+    }
+
+    g_free(jid);
+}
+
+void xmpp_register_rand(gchar *pubserv, gchar *conserv, gchar *conport,
+    gchar *authsfile, LmConnection *lconnection)
+{
+    gchar randjid[8] = "";
+    gchar randjpass[8] = "";
+
+    rand_str(randjid, 7);
+
+    srandom(time(NULL));
+
+    rand_str(randjpass, 7);
+    jpass = randjpass;
+
+    xmpp_register(pubserv, conserv, conport, randjid, jpass, authsfile, lconnection);
 }
