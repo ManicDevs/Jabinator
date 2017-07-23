@@ -16,6 +16,7 @@
 GMainContext *main_context;
 
 static gchar *authsfile = NULL;
+static gint numthreads = 10;
 static gchar *recipient = NULL;
 //static gchar *message = "Don't accept this bitch!";
 static gchar *resource = "NULL";
@@ -24,7 +25,7 @@ static GOptionEntry entries[] =
 {
     { "auths", 'a', 0, G_OPTION_ARG_STRING, &authsfile,
       "Authentications file list (e.g. auth.list)", NULL },
-    { "threads", 't', 0, G_OPTION_ARG_STRING, &authsfile,
+    { "threads", 't', 0, G_OPTION_ARG_STRING, &numthreads,
       "Number of threads to use (e.g. 10)", NULL },
     { "recipient", 'R', 0, G_OPTION_ARG_STRING, &recipient,
       "Recipient to send the message to (e.g. user@server.org)", NULL },
