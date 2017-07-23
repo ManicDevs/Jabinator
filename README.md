@@ -14,8 +14,8 @@ In the working directory, i.e. bin/ - When it's created after running "make" you
 
 # Usage
 ## jabinator-regflood
-$ ./jabinator-regflood --help
 ```
+$ ./jabinator-regflood --help
 Usage:
   jabinator-regflood [OPTION?] - Jabinator - Registration flooder
 
@@ -49,8 +49,8 @@ Application Options:
 
 
 ## jabinator-msgflood
-$ ./jabinator-msgflood --help
 ```
+$ ./jabinator-msgflood --help
 Usage:
   jabinator-msgflood [OPTION?] - Jabinator - Message flooder
 
