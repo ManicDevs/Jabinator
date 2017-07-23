@@ -15,4 +15,7 @@ void xmpp_deljid(gchar *jid, LmConnection *lconnection);
 
 void xmpp_sendmsg(gchar *jid, gchar *subj, gchar *body, LmConnection *lconnection);
 
+void xmpp_register_rand(gchar *pubserv, gchar *conserv, gchar *conport,
+    gchar *authsfile, LmConnection *lconnection);
+
 #endif

@@ -96,16 +96,22 @@ LmConnection *xmpp_connect(gchar *jpubserv, gchar *jconserv, gint jconport,
     if(!dossl)
         dossl = FALSE;
 
-    if(!jid)
+    if(jid != NULL)
     {
-        g_print("JID is empty\n");
-        return NULL;
+        if(!jid)
+        {
+            g_print("JID is empty\n");
+            return NULL;
+        }
     }
 
-    if(!jpass)
+    if(jpass != NULL)
     {
-        g_print("JPASS is empty\n");
-        return NULL;
+        if(!jpass)
+        {
+            g_print("JPASS is empty\n");
+            return NULL;
+        }
     }
 
     lconnection = lm_connection_new_with_context(jconserv, main_context);
@@ -125,25 +131,33 @@ LmConnection *xmpp_connect(gchar *jpubserv, gchar *jconserv, gint jconport,
 
     g_print("Connecting to server %s:%d", jconserv, jconport);
 
-    if(!jresource)
-        jresource = "NULL";
+    if(jresource != NULL)
+    {
+        if(!jresource)
+            jresource = "NULL";
 
-    srandom(time(NULL));
+        srandom(time(NULL));
 
-    gint tab[2];
-    tab[0] = (gint)(0xffff * (random() / (RAND_MAX + 1.0)));
-    tab[1] = (gint)(0xffff * (random() / (RAND_MAX + 1.0)));
-    dynresource = g_strdup_printf("%s.%04x%04x", jresource, tab[0], tab[1]);
+        gint tab[2];
+        tab[0] = (gint)(0xffff * (random() / (RAND_MAX + 1.0)));
+        tab[1] = (gint)(0xffff * (random() / (RAND_MAX + 1.0)));
+        dynresource = g_strdup_printf("%s.%04x%04x", jresource, tab[0], tab[1]);
 
-    jresource = dynresource;
+        jresource = dynresource;
 
-    g_print(" with resource %s\n", jresource);
+        g_print(" with resource %s\n", jresource);
+    }
+    else
+        g_print("\n");
 
-    jidat = g_strdup_printf("%s@%s", jid, jpubserv);
+    if(jid != NULL)
+    {
+        jidat = g_strdup_printf("%s@%s", jid, jpubserv);
 
-    lm_connection_set_jid(lconnection, jidat);
+        lm_connection_set_jid(lconnection, jidat);
 
-    g_free(jidat);
+        g_free(jidat);
+    }
 
     if(lm_ssl_is_supported() && dossl)
     {
@@ -160,14 +174,18 @@ LmConnection *xmpp_connect(gchar *jpubserv, gchar *jconserv, gint jconport,
         return NULL;
     }
 
-    if(!lm_connection_authenticate_and_block(lconnection, jid, jpass, dynresource, &error))
+    if(jid != NULL && jpass != NULL)
     {
-        g_free(dynresource);
-        g_print("Failed to authenticate: %s\n", error->message);
-        return NULL;
+        if(!lm_connection_authenticate_and_block(lconnection, jid, jpass, dynresource, &error))
+        {
+            g_free(dynresource);
+            g_print("Failed to authenticate: %s\n", error->message);
+            return NULL;
+        }
     }
 
-    g_free(dynresource);
+    if(jresource != NULL)
+        g_free(dynresource);
 
     if(!lm_connection_is_open(lconnection))
         return NULL;
@@ -288,7 +306,7 @@ void xmpp_register(gchar *pubserv, gchar *conserv, gchar *conport,
 
     g_print("%s|%s:%s|%s|%s\n", pubserv, conserv, conport, jid, jpass);
 
-    jid = g_strdup_printf("%s@%s", jid, pubserv);
+    jid = g_strdup_printf("%s", jid);
     lm_connection_set_jid(lconnection, jid);
 
     miq = lm_message_new_with_sub_type(NULL, LM_MESSAGE_TYPE_IQ, LM_MESSAGE_SUB_TYPE_SET);
@@ -316,11 +334,11 @@ void xmpp_register(gchar *pubserv, gchar *conserv, gchar *conport,
             }
             fprintf(fp, "%s|%s:%s|%s|%s\n", pubserv, conserv, conport, jid, jpass);
             fclose(fp);
-            g_print("Succeeded in registering account '%s@%s'\n", jid, pubserv);
+            g_print("Succeeded in registering account '%s'\n", jid);
         break;
 
         case LM_MESSAGE_SUB_TYPE_ERROR:
-            g_print("Failed to register account '%s@%s' due to: ", jid, pubserv);
+            g_print("Failed to register account '%s' due to: ", jid);
             node = lm_message_node_find_child(reply->node, "error");
             if(node)
                 g_print("%s\n", lm_message_node_get_value(node));
