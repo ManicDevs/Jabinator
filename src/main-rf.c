@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pthread.h>
 
 #include <loudmouth/loudmouth.h>
 
@@ -33,6 +34,30 @@ static GOptionEntry entries[] =
     { NULL }
 };
 
+void *thread_register(void *line)
+{
+    gint cycle;
+    LmConnection *lconnection;
+
+    gchar *pubserv = strtok(line, "|");
+    gchar *conserv = strtok(NULL, "|");
+    gchar *conport = strtok(conserv, ":");
+    conport = strtok(NULL, ":");
+
+    printf("pubserv: %s, conserv: %s, conport: %s\n", pubserv, conserv, conport);
+
+    gint jconport = atoi(conport);
+
+    main_context = g_main_context_new();
+
+    lconnection = xmpp_connect(pubserv, conserv, jconport, NULL, NULL, NULL, FALSE);
+
+    for(cycle = 0; cycle < numcycles; cycle++)
+        xmpp_register_rand(pubserv, conserv, conport, authsoutfile, lconnection);
+
+    return 0;
+}
+
 int main(int argc, char **argv)
 {
     FILE *fp;
@@ -62,29 +87,14 @@ int main(int argc, char **argv)
 
     while((read = getline(&line, &len, fp)) != -1)
     {
-        gint cycle;
+        gint i;
+        pthread_t thread[numthreads];
         // TODO: Add threading
-
-        LmConnection *lconnection;
 
         line[strcspn(line, "\n")] = 0;
 
-        gchar *pubserv = strtok(line, "|");
-        gchar *conserv = strtok(NULL, "|");
-        gchar *conport = strtok(conserv, ":");
-        conport = strtok(NULL, ":");
-
-        printf("pubserv: %s, conserv: %s, conport: %s\n", pubserv, conserv, conport);
-
-        gint jconport = atoi(conport);
-
-        main_context = g_main_context_new();
-
-        lconnection = xmpp_connect(pubserv, conserv, jconport,
-            NULL, NULL, NULL, FALSE);
-
-        for(cycle = 0; cycle < numcycles; cycle++)
-            xmpp_register_rand(pubserv, conserv, conport, authsoutfile, lconnection);
+        for(i = 0; i < numthreads; i++)
+            pthread_create(&thread[i], NULL, thread_register, (void*)line);
     }
 
     return EXIT_SUCCESS;

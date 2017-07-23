@@ -7,7 +7,7 @@ CFLAGS   = -g -std=c99 -Wall -I. -I../hdr `pkg-config --cflags loudmouth-1.0 --l
 
 LINKER   = gcc
 # linking flags here
-LFLAGS   = -Wall -I. -I../hdr `pkg-config --cflags loudmouth-1.0 --libs`
+LFLAGS   = -Wall -I. -I../hdr -lpthread `pkg-config --cflags loudmouth-1.0 --libs`
 
 # change these to proper directories where each file should be
 SRCDIR   = src
