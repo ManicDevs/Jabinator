@@ -8,7 +8,7 @@ In the working directory, i.e. bin/ - When it's created after running "make" you
 
 * Format: pubserv|connectserv:connectport
 
---- auth.list - Generated via ./jabinator-regflood, needed for ./jabinator-addflood
+--- auth.list - Generated via ./jabinator-regflood, needed for ./jabinator-addflood and ./jabinator-msgflood
 
 * Format: pubserv|connectserv:port|user|pass
 
