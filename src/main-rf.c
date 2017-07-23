@@ -18,6 +18,7 @@ GMainContext *main_context;
 static gchar *xmppsfile = NULL;
 static gchar *authsoutfile = NULL;
 static gint numthreads = 1;
+static gint numcycles = 1;
 
 static GOptionEntry entries[] =
 {
@@ -27,6 +28,8 @@ static GOptionEntry entries[] =
       "Authentications file list to output (e.g. auth.list)", NULL },
     { "threads", 't', 0, G_OPTION_ARG_STRING, &numthreads,
       "Number of threads to use [default=1]", NULL },
+    { "cycles", 'c', 0, G_OPTION_ARG_STRING, &numcycles,
+      "Number of cycles to register accounts [default=1]", NULL },
     { NULL }
 };
 
@@ -59,6 +62,7 @@ int main(int argc, char **argv)
 
     while((read = getline(&line, &len, fp)) != -1)
     {
+        gint cycle;
         // TODO: Add threading
 
         LmConnection *lconnection;
@@ -79,7 +83,8 @@ int main(int argc, char **argv)
         lconnection = xmpp_connect(pubserv, conserv, jconport,
             NULL, NULL, NULL, FALSE);
 
-        xmpp_register_rand(pubserv, conserv, conport, authsoutfile, lconnection);
+        for(cycle = 0; cycle < numcycles; cycle++)
+            xmpp_register_rand(pubserv, conserv, conport, authsoutfile, lconnection);
     }
 
     return EXIT_SUCCESS;
