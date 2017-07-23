@@ -71,6 +71,8 @@ int main(int argc, char **argv)
 
     while((read = getline(&line, &len, fp)) != -1)
     {
+        // TODO: Add threading
+
         LmConnection *lconnection;
 
         line[strcspn(line, "\n")] = 0;
