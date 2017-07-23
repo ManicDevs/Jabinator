@@ -76,7 +76,7 @@ int main(int argc, char **argv)
 
         printf("pubserv: %s, conserv: %s, conport: %s\n", pubserv, conserv, conport);
 
-        gint jconport = (gint)atoi(conport);
+        gint jconport = atoi(conport);
 
         main_context = g_main_context_new();
 
