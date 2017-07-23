@@ -62,7 +62,7 @@ int main(int argc, char **argv)
 
     while((read = getline(&line, &len, fp)) != -1)
     {
-        gint cycle;
+        int cycle;
         // TODO: Add threading
 
         LmConnection *lconnection;
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
         lconnection = xmpp_connect(pubserv, conserv, jconport,
             NULL, NULL, NULL, FALSE);
 
-        for(cycle = 0; cycle < numcycles; cycle++)
+        for(cycle = 0; cycle <= (int)numcycles; cycle++)
             xmpp_register_rand(pubserv, conserv, conport, authsoutfile, lconnection);
     }
 
