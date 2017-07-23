@@ -6,7 +6,7 @@ In the working directory, i.e. bin/ - When it's created after running "make" you
 
 --- xmpp.list - Generated via yourself, needed for ./jabinator-regflood
 
-* Format: pubserv:connectserv
+* Format: pubserv|connectserv:connectport
 
 --- auth.list - Generated via ./jabinator-regflood, needed for ./jabinator-addflood
 
