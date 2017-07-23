@@ -45,11 +45,9 @@ Usage:
   jabinator-addflood [OPTION?] - Jabinator - Add flooder
 
 Help Options:
-
   -h, --help          Show help options
 
 Application Options:
-
   -a, --auths         Authentications file list (e.g. auth.list)
 
   -t, --threads       Number of threads to use [default=1]
