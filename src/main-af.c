@@ -18,7 +18,6 @@ GMainContext *main_context;
 static gchar *authsfile = NULL;
 static gint numthreads = 1;
 static gchar *recipient = NULL;
-//static gchar *message = "Don't accept this bitch!";
 static gchar *resource = "NULL";
 
 static GOptionEntry entries[] =
@@ -29,8 +28,6 @@ static GOptionEntry entries[] =
       "Number of threads to use [default=1]", NULL },
     { "recipient", 'R', 0, G_OPTION_ARG_STRING, &recipient,
       "Recipient to send the message to (e.g. user@server.org)", NULL },
-//    { "message", 'm', 0, G_OPTION_ARG_STRING, &message,
-//      "Message to send to recipient [default=Don't accept this bitch!]", NULL },
     { "resource", 'r', 0, G_OPTION_ARG_STRING, &resource,
       "Resource to connect with [default=NULL]", NULL },
     { NULL }
@@ -50,7 +47,7 @@ int main(int argc, char **argv)
     g_option_context_parse(context, &argc, &argv, NULL);
     g_option_context_free(context);
 
-    if(!authsfile || !recipient /*|| !message*/ || !resource)
+    if(!authsfile || !recipient)
     {
         g_printerr("For usage, try %s --help\n", argv[0]);
         return EXIT_FAILURE;
@@ -65,8 +62,8 @@ int main(int argc, char **argv)
     fp = fopen(authsfile, "r");
     if(fp == NULL)
     {
-        g_print("auth.list doesn't exist!\n");
-        return -1;
+        g_print("%s doesn't exist!\n", authsfile);
+        return EXIT_FAILURE;
     }
 
     while((read = getline(&line, &len, fp)) != -1)
@@ -96,8 +93,7 @@ int main(int argc, char **argv)
 
         xmpp_addjid(recipient, lconnection);
         xmpp_deljid(recipient, lconnection);
-        //xmpp_sendmsg(jid, "LOL", "Hello", lconnection);
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
