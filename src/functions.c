@@ -201,7 +201,7 @@ void xmpp_addjid(gchar *jid, LmConnection *lconnection)
 
     miq = lm_message_new_with_sub_type(NULL, LM_MESSAGE_TYPE_IQ, LM_MESSAGE_SUB_TYPE_SET);
     query = lm_message_node_add_child(miq->node, "query", NULL);
-    lm_message_node_set_attribute(query, "xmlns", "jabber:iq:roster");
+    lm_message_node_set_attribute(query, "xmlns", IQ_ROSTER);
     query2 = lm_message_node_add_child(query, "item", NULL);
     lm_message_node_set_attribute(query2, "jid", jid);
     lm_message_node_set_attribute(query2, "name", jid);
