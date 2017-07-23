@@ -26,7 +26,7 @@ static GOptionEntry entries[] =
 {
     { "auths", 'a', 0, G_OPTION_ARG_STRING, &authsfile,
       "Authentications file list (e.g. auth.list)", NULL },
-    { "threads", 't', 0, G_OPTION_ARG_STRING, &numthreads,
+    { "threads", 't', 0, G_OPTION_ARG_INT, &numthreads,
       "Number of threads to use [default=1]", NULL },
     { "recipient", 'R', 0, G_OPTION_ARG_STRING, &recipient,
       "Recipient to send the message to (e.g. user@server.org)", NULL },

@@ -26,9 +26,9 @@ static GOptionEntry entries[] =
       "XMPPs file list for input (e.g. xmpp.list)", NULL },
     { "outfile", 'o', 0, G_OPTION_ARG_STRING, &authsoutfile,
       "Authentications file list to output (e.g. auth.list)", NULL },
-    { "threads", 't', 0, G_OPTION_ARG_STRING, &numthreads,
+    { "threads", 't', 0, G_OPTION_ARG_INT, &numthreads,
       "Number of threads to use [default=1]", NULL },
-    { "cycles", 'c', 0, G_OPTION_ARG_STRING, &numcycles,
+    { "cycles", 'c', 0, G_OPTION_ARG_INT, &numcycles,
       "Number of cycles to register accounts [default=1]", NULL },
     { NULL }
 };
@@ -62,7 +62,7 @@ int main(int argc, char **argv)
 
     while((read = getline(&line, &len, fp)) != -1)
     {
-        int cycle;
+        gint cycle;
         // TODO: Add threading
 
         LmConnection *lconnection;
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
         lconnection = xmpp_connect(pubserv, conserv, jconport,
             NULL, NULL, NULL, FALSE);
 
-        for(cycle = 0; cycle <= (int)numcycles; cycle++)
+        for(cycle = 0; cycle < numcycles; cycle++)
             xmpp_register_rand(pubserv, conserv, conport, authsoutfile, lconnection);
     }
 
