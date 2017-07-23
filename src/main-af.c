@@ -25,14 +25,47 @@ static GOptionEntry entries[] =
 {
     { "auths", 'a', 0, G_OPTION_ARG_STRING, &authsfile,
       "Authentications file list (e.g. auth.list)", NULL },
-    { "threads", 't', 0, G_OPTION_ARG_STRING, &numthreads,
+    { "threads", 't', 0, G_OPTION_ARG_INT, &numthreads,
       "Number of threads to use [default=1]", NULL },
-    { "recipient", 'R', 0, G_OPTION_ARG_INT, &recipient,
+    { "recipient", 'R', 0, G_OPTION_ARG_STRING, &recipient,
       "Recipient to send the message to (e.g. user@server.org)", NULL },
     { "resource", 'r', 0, G_OPTION_ARG_STRING, &resource,
       "Resource to connect with [default=NULL]", NULL },
     { NULL }
 };
+
+void thread_adder(void *line)
+{
+    LmConnection *lconnection;
+
+    gchar *pubserv = strtok(line, "|");
+    gchar *conserv = strtok(NULL, "|");
+    gchar *username = strtok(NULL, "|");
+    gchar *password = strtok(NULL, "|");
+    gchar *conport = strtok(conserv, ":");
+    conport = strtok(NULL, ":");
+
+    //if(!pubserv || !conserv || !conport)
+    //    return;
+
+    printf("pubserv: %s, conserv: %s, username: %s, password: %s, conport: %s\n",
+        pubserv, conserv, username, password, conport);
+
+    gint jconport = atoi(conport);
+
+    //main_context = g_main_context_new();
+
+    lconnection = xmpp_connect(pubserv, conserv, jconport,
+        username, password, resource, FALSE);
+
+    xmpp_deljid(recipient, lconnection);
+    xmpp_addjid(recipient, lconnection);
+    xmpp_deljid(recipient, lconnection);
+
+    xmpp_disconnect(lconnection);
+
+    return ;
+}
 
 int main(int argc, char **argv)
 {
@@ -69,32 +102,21 @@ int main(int argc, char **argv)
 
     while((read = getline(&line, &len, fp)) != -1)
     {
+        gint i;
+        pthread_t thread[numthreads];
         // TODO: Add threading
-
-        LmConnection *lconnection;
 
         line[strcspn(line, "\n")] = 0;
 
-        gchar *pubserv = strtok(line, "|");
-        gchar *conserv = strtok(NULL, "|");
-        gchar *username = strtok(NULL, "|");
-        gchar *password = strtok(NULL, "|");
-        gchar *conport = strtok(conserv, ":");
-        conport = strtok(NULL, ":");
-
-        printf("pubserv: %s, conserv: %s, username: %s, password: %s, conport: %s\n",
-            pubserv, conserv, username, password, conport);
-
-        gint jconport = (gint)atoi(conport);
-
-        main_context = g_main_context_new();
-
-        lconnection = xmpp_connect(pubserv, conserv, jconport,
-            username, password, resource, FALSE);
-
-        xmpp_addjid(recipient, lconnection);
-        xmpp_deljid(recipient, lconnection);
+        for(i = 0; i < numthreads; i++)
+        {
+            pthread_create(&thread[i], NULL, (void*)&thread_adder, (void*)line);
+            pthread_detach(thread[i]);
+            g_usleep(1000000);
+        }
     }
+
+    while(1);
 
     return EXIT_SUCCESS;
 }

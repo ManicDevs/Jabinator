@@ -9,6 +9,8 @@ extern GMainContext *main_context;
 LmConnection *xmpp_connect(gchar *jpubserv, gchar *jconserv, gint jconport,
     gchar *jid, gchar *jpass, gchar *jresource, gboolean dossl);
 
+void xmpp_disconnect(LmConnection *lconnection);
+
 void xmpp_addjid(gchar *jid, LmConnection *lconnection);
 
 void xmpp_deljid(gchar *jid, LmConnection *lconnection);

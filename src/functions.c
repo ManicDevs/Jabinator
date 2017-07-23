@@ -88,9 +88,9 @@ LmConnection *xmpp_connect(gchar *jpubserv, gchar *jconserv, gint jconport,
     gchar *jid, gchar *jpass, gchar *jresource, gboolean dossl)
 {
     LmSSL *ssl;
-    LmConnection *lconnection;
+    LmConnection *lconnection = NULL;
     LmMessageHandler *handler;
-    GError *error;
+    GError *error = NULL;
     gchar *jidat;
 
     if(!dossl)
@@ -114,6 +114,7 @@ LmConnection *xmpp_connect(gchar *jpubserv, gchar *jconserv, gint jconport,
         }
     }
 
+    GMainContext *main_context = NULL;
     lconnection = lm_connection_new_with_context(jconserv, main_context);
     lm_connection_set_keep_alive_rate(lconnection, 30);
     lm_connection_set_disconnect_function(lconnection, connection_close_cb, NULL, NULL);
@@ -129,7 +130,7 @@ LmConnection *xmpp_connect(gchar *jpubserv, gchar *jconserv, gint jconport,
 
     lm_connection_set_port(lconnection, jconport);
 
-    g_print("Connecting to server %s:%d", jconserv, jconport);
+    g_print("Connecting to server %s:%d\n", jconserv, jconport);
 
     if(jresource != NULL)
     {
@@ -168,11 +169,14 @@ LmConnection *xmpp_connect(gchar *jpubserv, gchar *jconserv, gint jconport,
     }
 
     if(!lm_connection_open_and_block(lconnection, &error))
+    //if(!lm_connection_open(lconnection, NULL, NULL, FALSE, &error))
     {
         g_free(dynresource);
         g_print("Failed to open connection: %s\n", error->message);
         return NULL;
     }
+
+    error = NULL;
 
     if(jid != NULL && jpass != NULL)
     {

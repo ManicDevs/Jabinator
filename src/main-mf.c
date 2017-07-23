@@ -40,6 +40,37 @@ static GOptionEntry entries[] =
     { NULL }
 };
 
+void thread_messager(void *line)
+{
+    LmConnection *lconnection;
+
+    gchar *pubserv = strtok(line, "|");
+    gchar *conserv = strtok(NULL, "|");
+    gchar *username = strtok(NULL, "|");
+    gchar *password = strtok(NULL, "|");
+    gchar *conport = strtok(conserv, ":");
+    conport = strtok(NULL, ":");
+
+    if(!pubserv || !conserv || !conport)
+        return;
+
+    printf("pubserv: %s, conserv: %s, username: %s, password: %s, conport: %s\n",
+        pubserv, conserv, username, password, conport);
+
+    gint jconport = (gint)atoi(conport);
+
+    //main_context = g_main_context_new();
+
+    lconnection = xmpp_connect(pubserv, conserv, jconport,
+        username, password, resource, FALSE);
+
+    xmpp_sendmsg(recipient, subject, message, lconnection);
+
+    xmpp_disconnect(lconnection);
+
+    return;
+}
+
 int main(int argc, char **argv)
 {
     FILE *fp;
@@ -75,31 +106,21 @@ int main(int argc, char **argv)
 
     while((read = getline(&line, &len, fp)) != -1)
     {
+        gint i;
+        pthread_t thread[numthreads];
         // TODO: Add threading
-
-        LmConnection *lconnection;
 
         line[strcspn(line, "\n")] = 0;
 
-        gchar *pubserv = strtok(line, "|");
-        gchar *conserv = strtok(NULL, "|");
-        gchar *username = strtok(NULL, "|");
-        gchar *password = strtok(NULL, "|");
-        gchar *conport = strtok(conserv, ":");
-        conport = strtok(NULL, ":");
-
-        printf("pubserv: %s, conserv: %s, username: %s, password: %s, conport: %s\n",
-            pubserv, conserv, username, password, conport);
-
-        gint jconport = (gint)atoi(conport);
-
-        main_context = g_main_context_new();
-
-        lconnection = xmpp_connect(pubserv, conserv, jconport,
-            username, password, resource, FALSE);
-
-        xmpp_sendmsg(recipient, subject, message, lconnection);
+        for(i = 0; i < numthreads; i++)
+        {
+            pthread_create(&thread[i], NULL, (void*)&thread_messager, (void*)line);
+            pthread_detach(thread[i]);
+            g_usleep(10000);
+        }
     }
+
+    while(1);
 
     return EXIT_SUCCESS;
 }
